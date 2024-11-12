@@ -1,42 +1,88 @@
-# Import necessary module
+# Import necessary modules
 import time
 
 # Logo (ASCII Art)
 logo = """
-████████╗███████╗██████╗ ███╗   ███╗██╗   ██╗██╗  ██╗
-╚══██╔══╝██╔════╝██╔══██╗████╗ ████║██║   ██║██║ ██╔╝
-   ██║   █████╗  ██████╔╝██╔████╔██║██║   ██║█████╔╝ 
-   ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║   ██║██╔═██╗ 
-   ██║   ███████╗██║  ██║██║ ╚═╝ ██║╚██████╔╝██║  ██╗
-   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝
+██╗███╗   ██╗██████╗  ██████╗  ██████╗ ██╗  ██╗██╗   ██╗
+██║████╗  ██║██╔══██╗██╔═══██╗██╔═══██╗██║ ██╔╝╚██╗ ██╔╝
+██║██╔██╗ ██║██║  ██║██║   ██║██║   ██║█████╔╝  ╚████╔╝ 
+██║██║╚██╗██║██║  ██║██║   ██║██║   ██║██╔═██╗   ╚██╔╝  
+██║██║ ╚████║██████╔╝╚██████╔╝╚██████╔╝██║  ██╗   ██║   
+╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝   ╚═╝   
 """
-
-# Display Logo
 print(logo)
-print("Welcome to the Offline Termux Chatbot!")
-print("Type 'exit' to end the conversation.\n")
+print("Welcome to the Offline Multi-Conversation Inbox!\n")
 
-# Predefined responses
+# Store conversations in a dictionary where each key is a convo ID
+conversations = {}
+
+# Predefined responses for conversation
 responses = {
-    "hello": "Hello! How can I assist you today?",
-    "how are you": "I'm just a script, but thank you for asking! How can I help?",
-    "your name": "I’m an Offline Termux Chatbot.",
-    "bye": "Goodbye! Have a great day!"
+    "hello": "Hello! How can I assist you?",
+    "how are you": "I'm here to help you in this conversation!",
+    "bye": "Goodbye! Ending this conversation."
 }
 
-# Conversation loop
+# Function to display current conversations
+def show_inbox():
+    print("\n--- Inbox ---")
+    if conversations:
+        for convo_id in conversations:
+            print(f"Convo ID: {convo_id} - Messages: {len(conversations[convo_id])}")
+    else:
+        print("No active conversations.")
+    print("--- End of Inbox ---\n")
+
+# Function to handle a specific conversation
+def handle_conversation(convo_id):
+    if convo_id not in conversations:
+        conversations[convo_id] = []
+    print(f"\n--- Conversation with ID: {convo_id} ---")
+    while True:
+        user_input = input(f"You ({convo_id}): ").strip().lower()
+        
+        # Exit condition for this conversation
+        if user_input == "exit":
+            print(f"Exiting conversation {convo_id}.\n")
+            break
+        
+        # Store user message
+        conversations[convo_id].append(f"You: {user_input}")
+        
+        # Generate bot response
+        response = responses.get(user_input, "I didn't understand that.")
+        conversations[convo_id].append(f"Bot: {response}")
+        
+        # Display bot response
+        print(f"Bot ({convo_id}): {response}")
+
+# Main loop
 while True:
-    # Take user input
-    user_input = input("You: ").strip().lower()
+    # Display inbox
+    show_inbox()
+    print("Options: \n1. Start new conversation\n2. Open existing conversation\n3. Quit")
+    choice = input("Choose an option (1, 2, or 3): ").strip()
     
-    # Check if user wants to exit
-    if user_input == "exit":
-        print("Chatbot: Goodbye! Take care.")
+    if choice == "1":
+        # Start a new conversation
+        convo_id = input("Enter new Convo ID: ").strip()
+        if convo_id in conversations:
+            print("Conversation ID already exists. Try a different one.\n")
+        else:
+            handle_conversation(convo_id)
+    
+    elif choice == "2":
+        # Open an existing conversation
+        convo_id = input("Enter existing Convo ID: ").strip()
+        if convo_id in conversations:
+            handle_conversation(convo_id)
+        else:
+            print("Conversation ID not found.\n")
+    
+    elif choice == "3":
+        # Exit the program
+        print("Exiting the inbox. Goodbye!")
         break
     
-    # Respond based on predefined responses
-    response = responses.get(user_input, "Sorry, I didn't understand that.")
-    print("Chatbot:", response)
-    
-    # Small delay for readability
-    time.sleep(1)
+    else:
+        print("Invalid option. Please choose 1, 2, or 3.\n")
